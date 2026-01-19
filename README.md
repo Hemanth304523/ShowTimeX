@@ -1,4 +1,4 @@
-# ShowTimeX
+# 🎬ShowTimeX
 
 ShowTimeX is a full-stack web application for movie ticket booking, featuring a React + TypeScript frontend and a Python backend. It allows users to browse movies, book tickets, and manage bookings, with an admin dashboard for managing movies and bookings.
 
