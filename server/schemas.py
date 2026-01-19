@@ -44,6 +44,7 @@ class MovieBase(BaseModel):
     genre: str
     duration: int
     rating: Optional[float] = None
+    image_url: Optional[str] = None
 
 
 class MovieCreate(MovieBase):
@@ -76,6 +77,7 @@ class BookingResponse(BookingBase):
     id: int
     user_id: int
     created_at: datetime
+    movie_name: str = None
 
     class Config:
         from_attributes = True

@@ -23,6 +23,7 @@ class Movies(Base):
     genre = Column(String, nullable=False)
     duration = Column(Integer, nullable=False)  # duration in minutes
     rating = Column(Float, nullable=True)
+    image_url = Column(String, nullable=True)  # URL for movie image
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)  # admin who created movie
     created_at = Column(DateTime, default=datetime.utcnow)
 

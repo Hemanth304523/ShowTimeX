@@ -30,7 +30,7 @@ export const authAPI = {
 };
 
 export const moviesAPI = {
-  getAll: () => api.get('/movies'),
+  getAll: (params?: any) => api.get('/movies', { params }),
   getById: (id: number) => api.get(`/movies/${id}`),
   create: (data: any) => api.post('/admin/movies', data),
   update: (id: number, data: any) => api.put(`/admin/movies/${id}`, data),
@@ -38,10 +38,11 @@ export const moviesAPI = {
 };
 
 export const bookingsAPI = {
-  getAll: () => api.get('/user/bookings'),
+  getAll: (params?: any) => api.get('/user/bookings', { params }),
   create: (movieId: number, numberOfTickets: number) =>
     api.post('/user/bookings', { Movies_id: movieId, tickets_booked: numberOfTickets }),
   getById: (id: number) => api.get(`/user/bookings/${id}`),
+  delete: (id: number) => api.delete(`/user/bookings/${id}`),
 };
 
 export default api;

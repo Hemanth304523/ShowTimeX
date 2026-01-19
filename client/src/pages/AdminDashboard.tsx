@@ -11,6 +11,7 @@ interface Movie {
   genre: string;
   duration: number;
   rating: number;
+  image_url?: string;
 }
 
 function AdminDashboard() {
@@ -29,6 +30,7 @@ function AdminDashboard() {
     genre: '',
     duration: '',
     rating: '',
+    image_url: '',
   });
 
   useEffect(() => {
@@ -76,6 +78,7 @@ function AdminDashboard() {
         genre: formData.genre,
         duration: parseInt(formData.duration),
         rating: parseFloat(formData.rating),
+        image_url: formData.image_url,
       };
 
       if (editingId) {
@@ -86,7 +89,7 @@ function AdminDashboard() {
         await moviesAPI.create(movieData);
         setSuccessMessage('Movie added successfully!');
       }
-      setFormData({ title: '', genre: '', duration: '', rating: '' });
+      setFormData({ title: '', genre: '', duration: '', rating: '', image_url: '' });
       setShowForm(false);
       fetchMovies();
     } catch (err: any) {
@@ -100,6 +103,7 @@ function AdminDashboard() {
       genre: movie.genre,
       duration: movie.duration.toString(),
       rating: movie.rating.toString(),
+      image_url: movie.image_url || '',
     });
     setEditingId(movie.id);
     setShowForm(true);
@@ -107,7 +111,7 @@ function AdminDashboard() {
 
   const handleCancelEdit = () => {
     setEditingId(null);
-    setFormData({ title: '', genre: '', duration: '', rating: '' });
+    setFormData({ title: '', genre: '', duration: '', rating: '', image_url: '' });
     setShowForm(false);
   };
 
@@ -123,7 +127,6 @@ function AdminDashboard() {
     }
   };
 
-  const parsedUser = user ? JSON.parse(user) : null;
 
   return (
     <div className="admin-container">
@@ -209,6 +212,16 @@ function AdminDashboard() {
                     required
                   />
                 </div>
+                <div className="form-group">
+                  <label>Image URL</label>
+                  <input
+                    type="text"
+                    name="image_url"
+                    value={formData.image_url}
+                    onChange={handleInputChange}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
               </div>
               <button type="submit" className="submit-btn">
                 {editingId ? 'Update Movie' : 'Add Movie'}
@@ -224,8 +237,36 @@ function AdminDashboard() {
             <div className="movies-grid">
               {movies.map((movie) => (
                 <div key={movie.id} className="movie-card">
-                  <div className="movie-card-image">
-                    <img src="/image1.png" alt={movie.title} />
+                  <div className="movie-card-image" style={{
+                    height: '350px',
+                    width: '100%',
+                    background: '#eaeaea',
+                    borderTopLeftRadius: '16px',
+                    borderTopRightRadius: '16px',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: 0,
+                  }}>
+                    <img
+                      src={movie.image_url && movie.image_url.trim() !== '' ? movie.image_url : "/image1.png"}
+                      alt={movie.title}
+                      style={{
+                        maxWidth: '100%',
+                        maxHeight: '100%',
+                        width: 'auto',
+                        height: '100%',
+                        objectFit: 'contain',
+                        objectPosition: 'center',
+                        borderTopLeftRadius: '16px',
+                        borderTopRightRadius: '16px',
+                        display: 'block',
+                        background: '#222',
+                        margin: '0 auto',
+                      }}
+                      onError={e => { (e.target as HTMLImageElement).src = "/image1.png"; }}
+                    />
                   </div>
                   <div className="movie-card-content">
                     <h3>{movie.title}</h3>

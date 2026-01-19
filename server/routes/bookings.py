@@ -1,6 +1,7 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer
+from fastapi import Query
 from starlette.requests import Request
 from sqlalchemy.orm import Session
 from database import SessionLocal
@@ -55,8 +56,17 @@ def create_booking(booking: schemas.BookingCreate, db: Session = db_dependency, 
 @router.get("/", response_model=List[schemas.BookingResponse], dependencies=[Depends(security)])
 def read_bookings(skip: int = 0, limit: int = 10, db: Session = db_dependency, current_user: dict = Depends(user_required)):
     # Users can only see their own bookings
-    bookings = db.query(models.Bookings).filter(models.Bookings.user_id == current_user["user_id"]).offset(skip).limit(limit).all()
-    return bookings
+    query = db.query(models.Bookings).filter(models.Bookings.user_id == current_user["user_id"])
+    total = query.count()
+    bookings = query.offset(skip).limit(limit).all()
+    # Attach movie name to each booking
+    result = []
+    for booking in bookings:
+        movie = db.query(models.Movies).filter(models.Movies.id == booking.Movies_id).first()
+        booking_dict = booking.__dict__.copy()
+        booking_dict["movie_name"] = movie.title if movie else "Unknown"
+        result.append(booking_dict)
+    return result
 
 @router.get("/{booking_id}", response_model=schemas.BookingResponse, dependencies=[Depends(security)])
 def read_booking(booking_id: int, db: Session = db_dependency, current_user: dict = Depends(user_required)):

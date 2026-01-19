@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { FaTrash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { bookingsAPI } from '../utils/api';
 import Footer from '../components/footer.tsx';
@@ -13,6 +14,7 @@ interface Booking {
   tickets_booked: number;
   Status: boolean;
   created_at: string;
+  movie_name?: string;
 }
 
 function BookingList() {
@@ -37,8 +39,22 @@ function BookingList() {
       setBookings(response.data);
     } catch (err) {
       setError('Failed to load bookings');
+    const [page, setPage] = useState(1);
+    const [total, setTotal] = useState(0);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Delete booking handler
+  const handleDeleteBooking = async (bookingId: number) => {
+    if (window.confirm('Are you sure you want to delete this booking?')) {
+      try {
+        await bookingsAPI.delete(bookingId);
+        setBookings(bookings.filter(b => b.id !== bookingId));
+      } catch (err) {
+        setError('Failed to delete booking');
+      }
     }
   };
 
@@ -62,15 +78,24 @@ function BookingList() {
           <div className="bookings-list">
             {bookings.map((booking) => (
               <div key={booking.id} className="booking-card">
-                <div className="booking-header">
-                  <h3>Booking #{booking.id}</h3>
-                  <span className={`status ${booking.Status ? 'confirmed' : 'cancelled'}`}>
-                    {booking.Status ? 'Confirmed' : 'Cancelled'}
-                  </span>
+                <div className="booking-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <h3>Booking #{booking.id}</h3>
+                    <span className={`status ${booking.Status ? 'confirmed' : 'cancelled'}`}>
+                      {booking.Status ? 'Confirmed' : 'Cancelled'}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => handleDeleteBooking(booking.id)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#d9534f', fontSize: '1.2rem' }}
+                    title="Delete Booking"
+                  >
+                    <FaTrash />
+                  </button>
                 </div>
                 <div className="booking-details">
                   <p><strong>Customer:</strong> {booking.customer_name}</p>
-                  <p><strong>Movie ID:</strong> {booking.Movies_id}</p>
+                  <p><strong>Movie:</strong> {booking.movie_name || booking.Movies_id}</p>
                   <p><strong>Tickets:</strong> {booking.tickets_booked}</p>
                   <p><strong>Total Price:</strong> ₹{booking.tickets_booked * 250}</p>
                   <p><strong>Booked on:</strong> {new Date(booking.created_at).toLocaleDateString()}</p>

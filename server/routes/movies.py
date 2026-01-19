@@ -86,10 +86,20 @@ def delete_movie(movie_id: int, db: Session = db_dependency, current_user: dict 
     return None
 
 # Public endpoints for browsing movies
-@public_router.get("/", response_model=List[schemas.MovieResponse])
+from fastapi.responses import JSONResponse
+
+@public_router.get("/", response_model=None)
 def get_all_movies(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """Get all movies - public endpoint"""
-    return db.query(models.Movies).offset(skip).limit(limit).all()
+    query = db.query(models.Movies)
+    total = query.count()
+    movies = query.offset(skip).limit(limit).all()
+    return {"movies": movies, "total": total}
+
+@public_router.get("/movies/", response_model=List[schemas.MovieResponse])
+def get_movies(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    movies = db.query(models.Movies).offset(skip).limit(limit).all()
+    return movies
 
 @public_router.get("/{movie_id}", response_model=schemas.MovieResponse)
 def get_movie_details(movie_id: int, db: Session = Depends(get_db)):

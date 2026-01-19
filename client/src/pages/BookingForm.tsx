@@ -52,11 +52,23 @@ function BookingForm() {
         <h1>Book Tickets</h1>
 
         {movie && (
-          <div className="movie-info">
-            <div className="movie-poster">
-              <img src={`/image1.png`} alt={movie.title} />
+          <div className="movie-info" style={{ display: 'flex', alignItems: 'flex-start', gap: '32px', marginBottom: '24px' }}>
+            <div className="movie-poster" style={{ flex: '0 0 220px', maxWidth: '220px', maxHeight: '320px', overflow: 'hidden', borderRadius: '12px', background: '#eaeaea', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <img
+                src={movie.image_url || "/image1.png"}
+                alt={movie.title}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain',
+                  borderRadius: '12px',
+                  background: '#222',
+                  display: 'block',
+                }}
+                onError={e => { (e.target as HTMLImageElement).src = "/image1.png"; }}
+              />
             </div>
-            <div className="movie-details">
+            <div className="movie-details" style={{ flex: 1 }}>
               <h2>{movie.title}</h2>
               <p><strong>Genre:</strong> {movie.genre}</p>
               <p><strong>Duration:</strong> {movie.duration} mins</p>
