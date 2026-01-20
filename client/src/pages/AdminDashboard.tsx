@@ -46,7 +46,7 @@ function AdminDashboard() {
     try {
       setLoading(true);
       const response = await moviesAPI.getAll();
-      setMovies(response.data);
+      setMovies(response.data.movies);
     } catch (err) {
       setError('Failed to load movies');
     } finally {

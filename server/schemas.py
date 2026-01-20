@@ -65,19 +65,34 @@ class BookingBase(BaseModel):
     Movies_id: int
     customer_name: str
     tickets_booked: int
+    ticket_slot: str
+    ticket_type: str
     Status: Optional[bool] = True
 
 
 class BookingCreate(BaseModel):
     Movies_id: int
     tickets_booked: int
+    ticket_slot: str
+    ticket_type: Literal["Regular", "Premium", "IMAX", "4DX"]
 
 
-class BookingResponse(BookingBase):
+
+class BookingResponse(BaseModel):
     id: int
+    uuid: str
+    Movies_id: int
     user_id: int
+    customer_name: str
+    tickets_booked: int
+    ticket_slot: str
+    ticket_type: str
+    ticket_price: int
+    Status: bool
+    seat_number: str
+    qr_code: str
+    movie_name: str | None
     created_at: datetime
-    movie_name: str = None
 
     class Config:
         from_attributes = True

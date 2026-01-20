@@ -21,7 +21,7 @@ function Home() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-  const pageSize = 8;
+  const pageSize = 6;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
@@ -46,7 +46,6 @@ function Home() {
   const fetchMovies = async () => {
     try {
       setLoading(true);
-      // Add query params for pagination and filters
       const params: any = {
         skip: (page - 1) * pageSize,
         limit: pageSize,
@@ -80,8 +79,8 @@ function Home() {
 
       <div className="home-content">
         <section className="hero">
-          <h2>Now Showing</h2>
-          <p>Book your tickets for the latest movies</p>
+          <h2>Featured Movies</h2>
+          <p>Browse and book tickets for movies currently in theatres</p>
         </section>
 
         {/* Advanced Search Bar Component */}

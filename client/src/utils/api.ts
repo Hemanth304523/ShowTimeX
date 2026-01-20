@@ -39,10 +39,14 @@ export const moviesAPI = {
 
 export const bookingsAPI = {
   getAll: (params?: any) => api.get('/user/bookings', { params }),
-  create: (movieId: number, numberOfTickets: number) =>
-    api.post('/user/bookings', { Movies_id: movieId, tickets_booked: numberOfTickets }),
-  getById: (id: number) => api.get(`/user/bookings/${id}`),
+  create: (data: {
+    Movies_id: number;
+    tickets_booked: number;
+    ticket_type: string;
+    ticket_slot: string;
+  }) => api.post('/user/bookings', data),
   delete: (id: number) => api.delete(`/user/bookings/${id}`),
 };
+
 
 export default api;

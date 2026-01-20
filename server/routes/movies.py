@@ -1,12 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.security import HTTPBearer
 from starlette.requests import Request
 from sqlalchemy.orm import Session
 from database import SessionLocal
 import models
 import schemas
-from typing import List
+from typing import List, Optional
 from routes.auth import get_current_user
+from fastapi import Query, HTTPException
+from typing import Optional
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/admin/movies", tags=["movies"])
 public_router = APIRouter(prefix="/movies", tags=["movies"])
@@ -85,25 +88,36 @@ def delete_movie(movie_id: int, db: Session = db_dependency, current_user: dict 
     db.commit()
     return None
 
-# Public endpoints for browsing movies
-from fastapi.responses import JSONResponse
+# Public endpoints
 
 @public_router.get("/", response_model=None)
-def get_all_movies(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    """Get all movies - public endpoint"""
+def get_movies(
+    skip: int = 0,
+    limit: int = 10,
+    search: Optional[str] = Query(None),
+    genre: Optional[str] = Query(None),
+    min_rating: Optional[float] = Query(None),
+    db: Session = Depends(get_db),
+):
     query = db.query(models.Movies)
+
+    if search:
+        query = query.filter(models.Movies.title.ilike(f"%{search}%"))
+
+    if genre:
+        query = query.filter(models.Movies.genre == genre)
+
+    if min_rating:
+        query = query.filter(models.Movies.rating >= min_rating)
+
     total = query.count()
     movies = query.offset(skip).limit(limit).all()
+
     return {"movies": movies, "total": total}
 
-@public_router.get("/movies/", response_model=List[schemas.MovieResponse])
-def get_movies(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    movies = db.query(models.Movies).offset(skip).limit(limit).all()
-    return movies
 
 @public_router.get("/{movie_id}", response_model=schemas.MovieResponse)
 def get_movie_details(movie_id: int, db: Session = Depends(get_db)):
-    """Get movie details - public endpoint"""
     movie = db.query(models.Movies).filter(models.Movies.id == movie_id).first()
     if not movie:
         raise HTTPException(status_code=404, detail="Movie not found")
